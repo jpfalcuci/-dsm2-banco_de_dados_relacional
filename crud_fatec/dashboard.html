@@ -15,6 +15,8 @@
     </header>
     <main>
       <div class="container">
+        <button @click="goToCadastroProfessores">Cadastro de Professores</button>
+        <button @click="goToBuscaProfessores">Busca de Professores</button>
         <button @click="goToCadastroAlunos">Cadastro de Alunos</button>
         <button @click="goToBuscaAlunos">Busca de Alunos</button>
       </div>
@@ -34,6 +36,14 @@
       goToBuscaAlunos() {
         // Abre a página "buscaAlunos.html" em uma nova janela
         window.open("buscaAlunos.html", "_blank");
+      },
+      goToCadastroProfessores() {
+        // Abre a página "cadastroProfessores.html" em uma nova janela
+        window.open("cadastroProfessores.html", "_blank");
+      },
+      goToBuscaProfessores() {
+        // Abre a página "buscaProfessores.html" em uma nova janela
+        window.open("buscaProfessores.html", "_blank");
       },
     },
   });
