@@ -157,7 +157,7 @@
       },
       // Método para enviar os dados de inserção/edição
       submitData: function () {
-        if (application.first_name != "" && application.last_name != "") {
+        if (application.nome != "" && application.endereco != "" && application.curso != "" && application.salario != "") {
           if (application.actionButton == "Insert") {
             axios
               .post("cadastroProfessores.php", {
