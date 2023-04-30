@@ -1,8 +1,14 @@
+DROP DATABASE IF EXISTS Alunos;
+CREATE DATABASE IF NOT EXISTS Alunos;
+USE Alunos;
+
+
 CREATE TABLE Cidades (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(60),
     populacao INT
 ) engine=INNODB;
+
 
 CREATE TABLE Alunos (
     ra INT PRIMARY KEY AUTO_INCREMENT,
@@ -10,6 +16,7 @@ CREATE TABLE Alunos (
     cidade_id INT,
     FOREIGN KEY(cidade_id) REFERENCES Cidades(id)
 );
+
 
 INSERT INTO Cidades VALUES
     (null, 'Patrosítio', 15000),
@@ -19,6 +26,7 @@ INSERT INTO Cidades VALUES
     (null, 'Itú', 5000)
 ;
 
+
 INSERT INTO Alunos VALUES
     (1, 'Marie Curie', 3),
     (2, 'Alan Turing', 1),
@@ -27,9 +35,16 @@ INSERT INTO Alunos VALUES
     (5, 'Linn Margulis', 2)
 ;
 
+
 SELECT *
     FROM Alunos JOIN Cidades
     ON Cidades.id = Alunos.cidade_id;
+
+
+
+DROP DATABASE IF EXISTS Motoristas;
+CREATE DATABASE IF NOT EXISTS Motoristas;
+USE Motoristas;
 
 
 CREATE TABLE Pessoa (
@@ -39,6 +54,7 @@ CREATE TABLE Pessoa (
     Cidade VARCHAR(255)
 );
 
+
 CREATE TABLE Carro (
     ID_Carro INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(255),
@@ -46,6 +62,7 @@ CREATE TABLE Carro (
     ID_Pessoa INT,
     FOREIGN KEY (ID_Pessoa) REFERENCES Pessoa(ID_Pessoa)
 );
+
 
 INSERT INTO Pessoa VALUES
     (null, 'Marie Curie', 'Endereço 1', 'Patrosítio'),
@@ -55,9 +72,15 @@ INSERT INTO Pessoa VALUES
     (null, 'Linn Margulis', 'Endereço 5', 'Itú')
 ;
 
+
 INSERT INTO Carro VALUES
     (null, 'Palio', 'Fiat', 2),
     (null, 'Gol', 'VW', 3),
     (null, 'Fusca', 'VW', 1),
     (null, 'HB20', 'Hyundai', 4)
 ;
+
+
+SELECT *
+    FROM Carro JOIN Pessoa
+    ON Carro.ID_Pessoa = Pessoa.ID_Pessoa;

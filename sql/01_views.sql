@@ -1,6 +1,6 @@
-CREATE DATABASE fatec;
-
-USE fatec;
+DROP DATABASE IF EXISTS Loja;
+CREATE DATABASE IF NOT EXISTS Loja;
+USE Loja;
 
 
 CREATE TABLE marcas (
@@ -18,9 +18,7 @@ CREATE TABLE produtos (
     prod_data_fabricacao	TIMESTAMP DEFAULT now(),
     prod_perecivel		    BOOLEAN,
     prod_valor			    DECIMAL(10,2),
-    
-    marca_id				INT,
-    CONSTRAINT fk_marcas FOREIGN KEY(marca_id) REFERENCES marcas(marca_id)
+    marca_id				INT REFERENCES marcas(marca_id)
 );
 
 
@@ -32,12 +30,9 @@ CREATE TABLE fornecedores (
 
 
 CREATE TABLE produto_fornecedor (
-    prod_id	INT NOT NULL REFERENCES produtos(prod_id),
-    forn_id INT NOT NULL REFERENCES fornecedores(forn_id),
-    
-    PRIMARY KEY (prod_id, forn_id),
-    CONSTRAINT fk_produto FOREIGN KEY(prod_id) REFERENCES produtos(prod_id),
-    CONSTRAINT fk_fornecedor FOREIGN KEY(forn_id) REFERENCES fornecedores(forn_id)
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    prod_id	    INT NOT NULL REFERENCES produtos(prod_id),
+    forn_id     INT NOT NULL REFERENCES fornecedores(forn_id),
 );
 
 
@@ -118,15 +113,15 @@ INSERT INTO produtos VALUES
 
 
 INSERT INTO produto_fornecedor VALUES
-    (1,1),
-    (4,1)
+    (null, 1,1),
+    (null, 4,1)
 ;
 
 
 SELECT prod_id, prod_nome, prod_valor
     FROM produtos
     ORDER BY prod_valor DESC
-    limit 10;
+    LIMIT 10;
 
 
 CREATE VIEW Top10MaisCaros AS

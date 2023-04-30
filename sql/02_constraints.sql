@@ -1,3 +1,8 @@
+DROP DATABASE IF EXISTS Constraints;
+CREATE DATABASE IF NOT EXISTS Constraints;
+USE Constraints;     
+
+
 CREATE TABLE Pets (
     id      INT PRIMARY KEY AUTO_INCREMENT,
     nome    VARCHAR(60) NOT NULL,
@@ -6,8 +11,8 @@ CREATE TABLE Pets (
 
 INSERT INTO Pets VALUES (null, "Milady", 2.2);
 INSERT INTO Pets VALUES (null, "", 1.5);
-INSERT INTO Pets VALUES (null, "", 0);
-INSERT INTO Pets VALUES ("Jade", 1.2);
+INSERT INTO Pets VALUES (null, "", 0); -- erro
+INSERT INTO Pets VALUES ("Jade", 1.2); -- erro
 
 
 CREATE TABLE Produtos (
