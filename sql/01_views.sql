@@ -1,42 +1,58 @@
 DROP DATABASE IF EXISTS Loja;
-CREATE DATABASE IF NOT EXISTS Loja;
-USE Loja;
+CREATE DATABASE IF NOT EXISTS Loja; -- postgresql e sqlserver não usam 'IF NOT EXISTS'
+USE Loja; -- postgresql não usa
 
 
 CREATE TABLE marcas (
     marca_id 		INT AUTO_INCREMENT PRIMARY KEY,
+    -- marca_id        SERIAL PRIMARY KEY, -- postgresql => quando o valor inicial e o incremento são 1
+    -- marca_id        INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY(10,2), -- postgresql => especificar valores iniciais e incremental; padrão (1,1)
+    -- marca_id        INT IDENTITY PRIMARY KEY, -- sqlserver, padrão (1,1)
     marca_nome 		VARCHAR(50) NOT NULL,
     marca_origem	VARCHAR(50)
-);
+) AUTO_INCREMENT = 10, INCREMENT BY 2; -- mysql, personalizar valor inicial e de incremento
 
 
 CREATE TABLE produtos (
     prod_id			        INT AUTO_INCREMENT PRIMARY KEY,
+    -- prod_id                 SERIAL PRIMARY KEY, -- postgresql
+    -- prod_id                 INT IDENTITY PRIMARY KEY, -- sqlserver, padrão (1,1)
     prod_nome			    VARCHAR(50) NOT NULL,
     prod_qtd_estoque		INT NOT NULL DEFAULT 0,
-    prod_estoque_mim		INT NOT NULL DEFAULT 0,
+    prod_estoque_min		INT NOT NULL DEFAULT 0,
     prod_data_fabricacao	TIMESTAMP DEFAULT now(),
-    prod_perecivel		    BOOLEAN,
+    -- prod_data_fabricacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- posgresql
+    -- prod_data_fabricacao    DATETIME DEFAULT GETDATE(), -- sqlserver
+    prod_perecivel		    BOOLEAN, -- valores false e true
+    -- prod_perecivel          BIT, -- sqlserver, valores 0 e 1
     prod_valor			    DECIMAL(10,2),
     marca_id				INT REFERENCES marcas(marca_id)
 );
+-- postgresql aceita NUMERIC ao invés de DECIMAL
 
 
 CREATE TABLE fornecedores (
     forn_id		INT AUTO_INCREMENT PRIMARY KEY,
+    -- forn_id     SERIAL PRIMARY KEY, -- postgresql
+    -- forn_id     INT IDENTITY PRIMARY KEY, -- sqlserver, padrão (1,1)
     forn_nome	VARCHAR(50) NOT NULL,
     forn_email	VARCHAR(50)
 );
 
 
 CREATE TABLE produto_fornecedor (
-    id          INT PRIMARY KEY AUTO_INCREMENT,
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    -- id          SERIAL PRIMARY KEY, -- postgresql
+    -- id          INT IDENTITY PRIMARY KEY, -- sqlserver, padrão (1,1)
     prod_id	    INT NOT NULL REFERENCES produtos(prod_id),
-    forn_id     INT NOT NULL REFERENCES fornecedores(forn_id),
+    forn_id     INT NOT NULL REFERENCES fornecedores(forn_id)
 );
 
 
-INSERT INTO fornecedores VALUES 
+INSERT INTO fornecedores VALUES
+-- INSERT INTO fornecedores(forn_nome, forn_email) VALUES -- sqlserver precisa declarar os VALUES e remover o NULL
+    -- postgresql usa DEFAULT ao invés de NULL
+    -- mysql aceita valores com aspas duplas
     (NULL, 'Los Pollos Hermanos'       ,'frig@pollos.com.mx'),
     (NULL, 'Umbrella Corporation'      ,'umbrella@umbrella.com.ca'),
     (NULL, 'UAC'                       ,'uac@uac.com.mars.dm'),
@@ -51,7 +67,10 @@ INSERT INTO fornecedores VALUES
 ;
 
 
-INSERT INTO marcas (marca_id, marca_nome, marca_origem) VALUES 
+INSERT INTO marcas VALUES
+-- INSERT INTO marcas (marca_nome, marca_origem) VALUES -- sqlserver precisa declarar os VALUES e remover o NULL
+    -- postgresql usa DEFAULT ao invés de NULL
+    -- mysql aceita valores com aspas duplas
     (NULL, 'Faber Castel'   , 'Brasil'),
     (NULL, 'Labra'		    , 'Brasil'),
     (NULL, 'TOTVS'  	    , 'Brasil'),
@@ -70,6 +89,10 @@ INSERT INTO marcas (marca_id, marca_nome, marca_origem) VALUES
 
 
 INSERT INTO produtos VALUES
+-- INSERT INTO produtos (prod_nome, prod_qtd_estoque, prod_estoque_min, prod_data_fabricacao, prod_perecivel, prod_valor, marca_id) VALUES -- sqlserver precisa declarar os VALUES e remover o NULL
+    -- postgresql usa DEFAULT ao invés de NULL
+    -- mysql aceita valores com aspas duplas
+    -- sqlserver usa 0 e 1 ao invés de false e true
     (NULL, 'lapis'				, 4502, 100, '2016-3-3', false, 002.5, 1),
     (NULL, 'lapis'				, 8800, 100, '2015-5-5', false, 014.0, 2),
     (NULL, 'borracha'			, 2907, 100, '2013-7-8', false, 004.2, 1),
@@ -113,96 +136,109 @@ INSERT INTO produtos VALUES
 
 
 INSERT INTO produto_fornecedor VALUES
-    (null, 1,1),
-    (null, 4,1)
+-- INSERT INTO produto_fornecedor (prod_id, forn_id) VALUES -- sqlserver precisa declarar os VALUES e remover o NULL
+    -- postgresql usa DEFAULT ao invés de NULL
+    (NULL, 1,1),
+    (NULL, 4,1)
 ;
 
 
 SELECT prod_id, prod_nome, prod_valor
+-- SELECT TOP 10 prod_id, prod_nome, prod_valor -- sqlserver
     FROM produtos
     ORDER BY prod_valor DESC
-    LIMIT 10;
-
+    LIMIT 10; -- sqlserver usa TOP junto do SELECT
 
 CREATE VIEW Top10MaisCaros AS
     SELECT prod_id, prod_nome, prod_valor
+    -- SELECT TOP 10 prod_id, prod_nome, prod_valor -- sqlserver
     FROM produtos
     ORDER BY prod_valor DESC
-    LIMIT 10;
+    LIMIT 10; -- sqlserver usa TOP junto do SELECT
 
 SELECT * FROM Top10MaisCaros;
 
 
-CREATE OR REPLACE VIEW produtos_marcas AS
-    SELECT 
-        prod_nome 'Nome do Produto',
-        marca_nome 'Marca',
-        prod_valor 'Preço',
-        prod_qtd_estoque 'Estoque',
-        marca_origem 'Origem',
+CREATE OR REPLACE VIEW produtos_marcas AS -- sqlserver não aceita 'OR REPLACE'
+    SELECT
+    -- SELECT TOP 100 PERCENT -- sqlserver usa TOP 100% das linhas, para usar 'ORDER BY'
+        prod_nome "Nome do Produto", -- aspas duplas obrigatórias no postgresql
+        marca_nome "Marca",
+        prod_valor "Preço",
+        prod_qtd_estoque "Estoque",
+        marca_origem "Origem",
         CASE
+            -- sqlserver usa 0 e 1 ao invés de false e true
             WHEN prod_perecivel = false THEN 'NÃO'
             WHEN prod_perecivel = true THEN 'SIM'
         END
-        'Perecível'
+        AS "Perecível" -- 'AS' é opcional no mysql
     FROM
         produtos LEFT JOIN marcas
             ON produtos.marca_id = marcas.marca_id
-    ORDER BY prod_nome;
+    ORDER BY prod_nome; -- sqlserver só aceita 'ORDER BY' em VIEWS se usado junto com TOP, OFFSET ou FOR XML
 
 SELECT * FROM produtos_marcas;
 
-SELECT * FROM produtos_marcas WHERE Preço < 100;
+SELECT * FROM produtos_marcas WHERE "Preço" < 100; --mysql aceita "Preço" sem aspas
 
 
 
 -- Exercícios
 
+
 -- Crie uma view que mostra todos os produtos e suas respectivas marcas
-CREATE OR REPLACE VIEW produtos_com_marcas AS
+
+CREATE OR REPLACE VIEW produtos_com_marcas AS -- sqlserver não aceita 'OR REPLACE'
     SELECT 
-        prod_nome 'Nome do Produto',
-        marca_nome 'Marca',
-        prod_qtd_estoque 'Estoque',
-        prod_estoque_mim 'Estoque mínimo',
-        prod_data_fabricacao 'Data de fabricação',
+    -- SELECT TOP 100 PERCENT -- sqlserver usa TOP 100% das linhas, para usar 'ORDER BY'
+        prod_nome "Nome do Produto", -- aspas duplas obrigatórias no postgresql p/ nome das colunas
+        marca_nome "Marca",
+        prod_qtd_estoque "Estoque",
+        prod_estoque_min "Estoque mínimo",
+        prod_data_fabricacao "Data de fabricação",
         CASE
+            -- sqlserver usa 0 e 1 ao invés de false e true
             WHEN prod_perecivel = false THEN 'NÃO'
             WHEN prod_perecivel = true THEN 'SIM'
         END
-        'Perecível',
-        prod_valor 'Valor'
+        AS "Perecível", -- 'AS' é opcional no mysql
+        prod_valor "Valor"
     FROM 
         produtos JOIN marcas
             ON produtos.marca_id = marcas.marca_id
-    ORDER BY prod_nome;
+    ORDER BY prod_nome; -- sqlserver só aceita 'ORDER BY' em VIEWS se usado junto com TOP, OFFSET ou FOR XML
 
 SELECT * FROM produtos_com_marcas;
 
 
 -- Crie uma view que mostra todos os produtos e seus respectivos fornecedores.
-CREATE OR REPLACE VIEW produtos_com_fornecedores AS
+
+CREATE OR REPLACE VIEW produtos_com_fornecedores AS -- sqlserver não aceita 'OR REPLACE'
     SELECT
-        prod_nome 'Nome',
-        forn_nome 'Fornecedor',
-        forn_email 'E-mail fornecedor'
+    -- SELECT TOP 100 PERCENT -- sqlserver usa TOP 100% das linhas, para usar 'ORDER BY'
+        prod_nome "Nome", -- aspas duplas obrigatórias no postgresql p/ nome das colunas
+        forn_nome "Fornecedor",
+        forn_email "E-mail fornecedor"
     FROM produtos
         JOIN produto_fornecedor
             ON produtos.prod_id = produto_fornecedor.prod_id
         JOIN fornecedores
             ON produto_fornecedor.forn_id = fornecedores.forn_id
-    ORDER BY prod_nome;
+    ORDER BY prod_nome; -- sqlserver só aceita 'ORDER BY' em VIEWS se usado junto com TOP, OFFSET ou FOR XML
 
 SELECT * FROM produtos_com_fornecedores;
 
 
 -- Crie uma view que mostra todos os produtos e seus respectivos fornecedores e marcas.
-CREATE OR REPLACE VIEW produtos_com_fornecedores_e_marcas AS
+
+CREATE OR REPLACE VIEW produtos_com_fornecedores_e_marcas AS -- sqlserver não aceita 'OR REPLACE'
     SELECT
-        p.prod_nome 'Nome',
-        m.marca_nome 'Marca',
-        f.forn_nome 'Fornecedor',
-        f.forn_email 'E-mail fornecedor'
+    -- SELECT TOP 100 PERCENT -- sqlserver usa TOP 100% das linhas, para usar 'ORDER BY'
+        p.prod_nome "Nome", -- aspas duplas obrigatórias no postgresql p/ nome das colunas
+        m.marca_nome "Marca",
+        f.forn_nome "Fornecedor",
+        f.forn_email "E-mail fornecedor"
     FROM produtos p
         JOIN produto_fornecedor pf
             ON p.prod_id = pf.prod_id
@@ -210,26 +246,30 @@ CREATE OR REPLACE VIEW produtos_com_fornecedores_e_marcas AS
             ON pf.forn_id = f.forn_id
         JOIN marcas m 
             ON p.marca_id = m.marca_id
-    ORDER BY prod_nome;
+    ORDER BY prod_nome; -- sqlserver só aceita 'ORDER BY' em VIEWS se usado junto com TOP, OFFSET ou FOR XML
 
 SELECT * FROM produtos_com_fornecedores_e_marcas;
 
 
 -- Crie uma view que mostra todos os produtos com estoque abaixo do mínimo.
-CREATE OR REPLACE VIEW produtos_com_estoque_minimo AS
+
+
+CREATE OR REPLACE VIEW produtos_com_estoque_minimo AS -- sqlserver não aceita 'OR REPLACE'
     SELECT 
-        prod_nome 'Nome',
-        prod_qtd_estoque 'Quantidade',
-        prod_estoque_mim 'Estoque mínimo',
-        prod_data_fabricacao 'Data de fabricação',
+    -- SELECT TOP 100 PERCENT -- sqlserver usa TOP 100% das linhas, para usar 'ORDER BY'
+        prod_nome "Nome", -- aspas duplas obrigatórias no postgresql p/ nome das colunas
+        prod_qtd_estoque "Quantidade",
+        prod_estoque_min "Estoque mínimo",
+        prod_data_fabricacao "Data de fabricação",
         CASE
+            -- sqlserver usa 0 e 1 ao invés de false e true
             WHEN prod_perecivel = false THEN 'NÃO'
             WHEN prod_perecivel = true THEN 'SIM'
         END
-        'Perecível',
-        prod_valor 'Valor'
+        AS "Perecível", -- 'AS' é opcional no mysql
+        prod_valor "Valor"
     FROM produtos
-    WHERE prod_qtd_estoque < prod_estoque_mim
-    ORDER BY prod_qtd_estoque;
+    WHERE prod_qtd_estoque < prod_estoque_min
+    ORDER BY prod_qtd_estoque; -- sqlserver só aceita 'ORDER BY' em VIEWS se usado junto com TOP, OFFSET ou FOR XML
 
 SELECT * FROM produtos_com_estoque_minimo;
