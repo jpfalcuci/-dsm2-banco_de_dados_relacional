@@ -173,8 +173,8 @@ SELECT a.nome "Nome do animal", a.cor "Cor", e.alimentacao "Alimentação"
     FROM Animais a LEFT JOIN Especies e
         ON a.especie_id = e.id
 	WHERE e.alimentacao = 'carnívoro'
-    AND (a.cor LIKE 'branc%'
-        OR a.cor LIKE 'pret%');
+    AND (a.cor LIKE 'branc%' OR a.cor LIKE 'pret%');
+    -- AND a.cor IN ('branco', 'branca', 'preto', 'preta'); -- alternativa
 
 
 -- Selecione todos os onívoros que nasceram antes de 2013
@@ -183,6 +183,7 @@ SELECT a.nome "Nome do animal", a.data_nasc "Data de nascimento", e.alimentacao 
         ON a.especie_id = e.id
 	WHERE e.alimentacao = 'onívoro'
     AND YEAR(a.data_nasc) < 2013; -- mysql e sqlserver
+    -- AND a.data_nasc < '2013-01-01'; -- alternativa
     -- AND EXTRACT(YEAR FROM a.data_nasc) < 2013; -- postgresql
 
 
