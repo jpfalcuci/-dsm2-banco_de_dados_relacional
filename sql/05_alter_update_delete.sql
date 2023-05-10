@@ -10,7 +10,8 @@ DROP TABLE Produtos;
 DELETE  -- deleta o conteúdo mas mantém a estrutura
 DROP    -- apaga o conteúdo e a estrutura
 
---
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS;   -- consultar informações das colunas
+SELECT * FROM INFORMATION_SCHEMA.TABLE;     -- consultar quais tabelas existem
 
 ALTER TABLE -- add campos, restrições, definição de um campo, remoções
 
