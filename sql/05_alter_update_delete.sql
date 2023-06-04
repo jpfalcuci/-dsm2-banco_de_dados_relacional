@@ -27,12 +27,12 @@ UPDATE Animais SET cor = 'laranja' WHERE especie_id = 1;
 
 -- Crie um campo altura para os animais.
 ALTER TABLE Animais ADD COLUMN altura DECIMAL(5,2) CHECK (altura > 0);
-ALTER TABLE Animais ADD altura DECIMAL(5,2) CHECK (altura > 0); -- sqlserver
+ALTER TABLE Animais ADD altura DECIMAL(5,2) CHECK (altura > 0);     -- sqlserver
 
 -- Crie um campo observação para os animais.
 ALTER TABLE Animais ADD COLUMN observacao VARCHAR(255);
-ALTER TABLE Animais ADD observacao VARCHAR(255); --sqlserver
-	
+ALTER TABLE Animais ADD observacao VARCHAR(255);            --sqlserver
+
 -- Remova todos os animais que pesam mais que 200 kilogramas.
 DELETE FROM Animais WHERE peso > 200;
 
@@ -44,8 +44,8 @@ ALTER TABLE Animais DROP COLUMN cor;
 
 -- Aumente o tamanho do campo nome dos animais para 80 caracteres.
 ALTER TABLE Animais MODIFY nome VARCHAR(80);
-ALTER TABLE Animais ALTER COLUMN nome TYPE VARCHAR(80); -- postgresql
-ALTER TABLE Animais ALTER COLUMN nome VARCHAR(80); -- sqlserver
+ALTER TABLE Animais ALTER COLUMN nome TYPE VARCHAR(80);     -- postgresql
+ALTER TABLE Animais ALTER COLUMN nome VARCHAR(80);          -- sqlserver
 
 -- Remova todos os gatos e cachorros.
 DELETE FROM Animais WHERE especie_id IN (1, 2);
